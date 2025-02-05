@@ -1,0 +1,203 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-lg">
+                <div class="card-body p-5">
+                    <h2 class="card-title text-center mb-4">
+                        <i class="fas fa-user-plus me-2"></i>Create Account
+                    </h2>
+                    
+                    <form method="post" class="register-form">
+                        {% csrf_token %}
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <label for="id_username" class="form-label">Username</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-user"></i>
+                                    </span>
+                                    <input type="text" name="username" class="form-control" id="id_username" required>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-4">
+                                <label for="id_email" class="form-label">Email</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-envelope"></i>
+                                    </span>
+                                    <input type="email" name="email" class="form-control" id="id_email" required>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <label for="id_first_name" class="form-label">First Name</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-user-circle"></i>
+                                    </span>
+                                    <input type="text" name="first_name" class="form-control" id="id_first_name" required>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-4">
+                                <label for="id_last_name" class="form-label">Last Name</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-user-circle"></i>
+                                    </span>
+                                    <input type="text" name="last_name" class="form-control" id="id_last_name" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 mb-4">
+                                <label for="id_phone_number" class="form-label">Phone Number</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-phone"></i>
+                                    </span>
+                                    <input type="tel" name="phone_number" class="form-control" id="id_phone_number" required placeholder="Enter 10-digit phone number">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <label for="id_password1" class="form-label">Password</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-lock"></i>
+                                    </span>
+                                    <input type="password" name="password1" class="form-control" id="id_password1" required>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-4">
+                                <label for="id_password2" class="form-label">Confirm Password</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-lock"></i>
+                                    </span>
+                                    <input type="password" name="password2" class="form-control" id="id_password2" required>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg btn-block btn-blink">
+                                <i class="fas fa-user-plus me-2"></i>Register Now
+                            </button>
+                        </div>
+                        
+                        <div class="text-center mt-4">
+                            <p class="mb-0">Already have an account? 
+                                <a href="{% url 'login' %}" class="text-primary">Login here</a>
+                            </p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.register-form .form-control {
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+}
+
+.register-form .input-group-text {
+    background-color: var(--light-bg);
+    border-right: none;
+}
+
+.register-form .form-control {
+    border-left: none;
+}
+
+.register-form .input-group:focus-within {
+    box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+}
+
+.register-form .input-group:focus-within .input-group-text,
+.register-form .input-group:focus-within .form-control {
+    border-color: var(--secondary-color);
+}
+
+.register-form .form-label {
+    font-weight: 500;
+    color: var(--text-color);
+}
+
+.card {
+    border: none;
+    border-radius: 15px;
+}
+
+.btn-blink {
+    animation: blink 2s infinite;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+}
+
+@keyframes blink {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.05); opacity: 0.8; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+/* Password strength indicators */
+.password-strength {
+    height: 5px;
+    margin-top: 5px;
+    border-radius: 2px;
+    transition: all 0.3s ease;
+}
+
+.strength-weak { background-color: #e74c3c; }
+.strength-medium { background-color: #f1c40f; }
+.strength-strong { background-color: #2ecc71; }
+</style>
+
+{% block extra_js %}
+<script>
+// Add password strength indicator
+document.getElementById('id_password1').addEventListener('input', function() {
+    const password = this.value;
+    const strength = calculatePasswordStrength(password);
+    updateStrengthIndicator(strength);
+});
+
+function calculatePasswordStrength(password) {
+    let strength = 0;
+    if (password.length >= 8) strength++;
+    if (password.match(/[a-z]/) && password.match(/[A-Z]/)) strength++;
+    if (password.match(/\d/)) strength++;
+    if (password.match(/[^a-zA-Z\d]/)) strength++;
+    return strength;
+}
+
+function updateStrengthIndicator(strength) {
+    const indicator = document.createElement('div');
+    indicator.className = 'password-strength';
+    
+    if (strength <= 1) indicator.classList.add('strength-weak');
+    else if (strength <= 2) indicator.classList.add('strength-medium');
+    else indicator.classList.add('strength-strong');
+    
+    const existingIndicator = document.querySelector('.password-strength');
+    if (existingIndicator) existingIndicator.remove();
+    
+    document.getElementById('id_password1').parentNode.appendChild(indicator);
+}
+</script>
+{% endblock %}
+{% endblock %}

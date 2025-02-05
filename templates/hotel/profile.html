@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <!-- User Profile Section -->
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h3 class="card-title">My Profile</h3>
+                    <div class="profile-info mt-4">
+                        <p><strong>Username:</strong> {{ user.username }}</p>
+                        <p><strong>Name:</strong> {{ user.get_full_name }}</p>
+                        <p><strong>Email:</strong> {{ user.email }}</p>
+                        <p><strong>Member Since:</strong> {{ user.date_joined|date:"F j, Y" }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Bookings Section -->
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h3 class="card-title mb-0">Recent Bookings</h3>
+                        <a href="{% url 'booking_list' %}" class="btn btn-primary">View All Bookings</a>
+                    </div>
+                    
+                    {% if recent_bookings %}
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Room</th>
+                                        <th>Check-in</th>
+                                        <th>Check-out</th>
+                                        <th>Status</th>
+                                        <th>Payment Mode</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for booking in recent_bookings %}
+                                        <tr>
+                                            <td>
+                                                {{ booking.room.room_type }} - {{ booking.room.room_number }}
+                                            </td>
+                                            <td>{{ booking.check_in|date:"M d, Y" }}</td>
+                                            <td>{{ booking.check_out|date:"M d, Y" }}</td>
+                                            <td>
+                                               
+                                                <span class="badge {% if booking.payment_status == 'confirmed' %}bg-success{% elif booking.payment_status == 'cancelled' %}bg-danger{% elif booking.payment_status == 'pending' %}bg-danger{% else %}bg-warning{% endif %}">
+                                                    {{ booking.payment_status|title }}
+                                                </span>
+                                                <span>₹{{ booking.total_price }}</span>                                           
+                                            </td>
+                                            <td>
+                                                <span>{{booking.payment_method}}</span>
+                                            </td>
+                                            <td>
+                                                <a href="{% url 'booking_detail' booking.id %}" class="btn btn-sm btn-info">Details</a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info">
+                            You haven't made any bookings yet. 
+                            <a href="{% url 'room_list' %}" class="alert-link">Browse our rooms</a> to make your first booking!
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.profile-info p {
+    margin-bottom: 0.5rem;
+}
+.badge {
+    font-size: 0.9em;
+    padding: 0.5em 1em;
+}
+.table td {
+    vertical-align: middle;
+}
+</style>
+{% endblock %}

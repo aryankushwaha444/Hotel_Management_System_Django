@@ -1,0 +1,157 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-body p-4">
+                    <h2 class="text-center mb-4">Book Room {{ room.room_number }}</h2>
+                    
+                    <!-- Room Details -->
+                    <div class="room-details mb-4">
+                        <h4>{{ room.room_number }} - {{ room.room_type }}</h4>
+                        <p class="text-muted">{{ room.description }}</p>
+                        <p class="h5 text-primary">₹ {{ room.price_per_night }} per night</p>
+                    </div>
+
+                    <form method="post" id="bookingForm" novalidate>
+                        {% csrf_token %}
+                        
+                        {% if messages %}
+                        <div class="messages mb-3">
+                            {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="check_in" class="form-label">Check-in Date and Time</label>
+                                <input type="datetime-local" class="form-control" id="check_in" name="check_in" required>
+                                <div class="invalid-feedback" id="check_in_feedback"></div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="check_out" class="form-label">Check-out Date and Time</label>
+                                <input type="datetime-local" class="form-control" id="check_out" name="check_out" required>
+                                <div class="invalid-feedback" id="check_out_feedback"></div>
+                            </div>
+                        </div>
+
+                        <div class="booking-summary mt-4 p-3 bg-light rounded">
+                            <h5>Booking Summary</h5>
+                            <div id="nights" class="mb-2">Number of nights: <span>0</span></div>
+                            <div id="total" class="h5 mb-0">Total Price: ₹<span>0</span></div>
+                        </div>
+
+                        <div class="mt-4">
+                            <button type="submit" class="btn btn-primary w-100" id="submitBtn">Book Now</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('bookingForm');
+    const checkIn = document.getElementById('check_in');
+    const checkOut = document.getElementById('check_out');
+    const submitBtn = document.getElementById('submitBtn');
+
+    // Safely pass Django variable to JavaScript
+    const pricePerNight = JSON.parse("{{ room.price_per_night|escapejs }}");
+
+    // Set minimum date to today
+    const today = new Date();
+    const todayStr = today.toISOString().slice(0, 16);
+    checkIn.min = todayStr;
+    checkOut.min = todayStr;
+
+    function updateSummary() {
+        const checkInDate = new Date(checkIn.value);
+        const checkOutDate = new Date(checkOut.value);
+
+        if (checkInDate && checkOutDate && checkOutDate > checkInDate) {
+            const nights = Math.ceil((checkOutDate - checkInDate) / (1000 * 60 * 60 * 24));
+            const total = nights * pricePerNight;
+            
+            document.querySelector('#nights span').textContent = nights;
+            document.querySelector('#total span').textContent = total;
+        } else {
+            document.querySelector('#nights span').textContent = '0';
+            document.querySelector('#total span').textContent = '0';
+        }
+    }
+
+    function validateDates() {
+        let isValid = true;
+        const now = new Date();
+        const checkInDate = new Date(checkIn.value);
+        const checkOutDate = new Date(checkOut.value);
+
+        // Reset validations
+        checkIn.classList.remove('is-invalid');
+        checkOut.classList.remove('is-invalid');
+        document.getElementById('check_in_feedback').textContent = '';
+        document.getElementById('check_out_feedback').textContent = '';
+
+        // Check if dates are selected
+        if (!checkIn.value) {
+            checkIn.classList.add('is-invalid');
+            document.getElementById('check_in_feedback').textContent = 'Please select check-in date and time';
+            isValid = false;
+        }
+
+        if (!checkOut.value) {
+            checkOut.classList.add('is-invalid');
+            document.getElementById('check_out_feedback').textContent = 'Please select check-out date and time';
+            isValid = false;
+        }
+
+        // Check if check-in is in the past
+        if (checkInDate < now) {
+            checkIn.classList.add('is-invalid');
+            document.getElementById('check_in_feedback').textContent = 'Check-in cannot be in the past';
+            isValid = false;
+        }
+
+        // Check if check-out is after check-in
+        if (checkInDate >= checkOutDate) {
+            checkOut.classList.add('is-invalid');
+            document.getElementById('check_out_feedback').textContent = 'Check-out must be after check-in';
+            isValid = false;
+        }
+
+        return isValid;
+    }
+
+    // Add event listeners
+    checkIn.addEventListener('change', function() {
+        // Update minimum check-out date to be after check-in
+        if (this.value) {
+            checkOut.min = this.value;
+        }
+        validateDates();
+        updateSummary();
+    });
+
+    checkOut.addEventListener('change', function() {
+        validateDates();
+        updateSummary();
+    });
+
+    form.addEventListener('submit', function(e) {
+        if (!validateDates()) {
+            e.preventDefault();
+        }
+    });
+});
+</script>
+{% endblock %}

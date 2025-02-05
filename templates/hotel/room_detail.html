@@ -1,0 +1,144 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+{% if user.is_authenticated %}
+<div class="row">
+    <div class="col-md-10 offset-md-1">
+        <div class="card">
+            {% if room.image_path %}
+            <div class="room-image-container">
+                <img src="{% static room.image_path %}" class="card-img-top" alt="{{ room.room_type }} Room">
+            </div>
+            {% endif %}
+            <div class="card-body">
+                <h2 class="card-title">{{ room.room_type }} Room - {{ room.room_number }}</h2>
+                <hr>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="details-section">
+                            <h4>Room Details</h4>
+                            <ul class="list-unstyled">
+                                <li><strong>Room Type:</strong> {{ room.room_type }}</li>
+                                <li><strong>Capacity:</strong> {{ room.capacity }} persons</li>
+                                <li><strong>Price per Night:</strong> ₹{{ room.price_per_night }}</li>
+                                <li><strong>Status:</strong> 
+                                    {% if room.is_available %}
+                                        <span class="badge bg-success">Available</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">Booked</span>
+                                    {% endif %}
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="description-section">
+                            <h4>Description</h4>
+                            <p class="room-description">{{ room.description|linebreaks }}</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-4">
+                    <h4>Amenities</h4>
+                    <div class="amenities-list">
+                        {% if room.amenities %}
+                            <ul class="list-unstyled row">
+                                {% for amenity in room.amenities %}
+                                <li class="col-md-4 mb-2">
+                                    <i class="fas fa-check text-success"></i> {{ amenity }}
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <ul class="list-unstyled row">
+                                <li class="col-md-4 mb-2"><i class="fas fa-check text-success"></i> Air Conditioning</li>
+                                <li class="col-md-4 mb-2"><i class="fas fa-check text-success"></i> Free Wi-Fi</li>
+                                <li class="col-md-4 mb-2"><i class="fas fa-check text-success"></i> Flat-screen TV</li>
+                                <li class="col-md-4 mb-2"><i class="fas fa-check text-success"></i> Private Bathroom</li>
+                                <li class="col-md-4 mb-2"><i class="fas fa-check text-success"></i> Daily Housekeeping</li>
+                            </ul>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="mt-4 text-center">
+                    {% if room.is_available %}
+                        <a href="{% url 'book_room' room.id %}" class="btn btn-success btn-lg">Book Now</a>
+                    {% else %}
+                        <button class="btn btn-danger btn-lg" disabled>Currently Booked</button>
+                    {% endif %}
+                    <a href="{% url 'room_list' %}" class="btn btn-secondary btn-lg">Back to Room List</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="row">
+    <div class="col-md-8 offset-md-2 text-center">
+        <div class="card">
+            <div class="card-body">
+                <h2 class="card-title">Welcome to Our Hotel</h2>
+                <p class="lead">Please register or login to view room details and make bookings.</p>
+                <div class="mt-4">
+                    <a href="{% url 'register' %}" class="btn btn-primary btn-lg mx-2">Register</a>
+                    <a href="{% url 'login' %}" class="btn btn-success btn-lg mx-2">Login</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .room-image-container {
+        max-height: 400px;
+        overflow: hidden;
+        position: relative;
+    }
+    
+    .room-image-container img {
+        width: 100%;
+        height: 400px;
+        object-fit: cover;
+    }
+    
+    .details-section, .description-section {
+        background-color: #f8f9fa;
+        padding: 20px;
+        border-radius: 8px;
+        height: 100%;
+    }
+    
+    .room-description {
+        white-space: pre-line;
+    }
+    
+    .amenities-list {
+        background-color: #f8f9fa;
+        padding: 20px;
+        border-radius: 8px;
+    }
+    
+    .amenities-list li {
+        font-size: 1.1em;
+    }
+    
+    .badge {
+        padding: 8px 12px;
+        font-size: 0.9em;
+    }
+    
+    .btn {
+        margin: 0 10px;
+    }
+    
+    .card {
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+</style>
+{% endblock %}

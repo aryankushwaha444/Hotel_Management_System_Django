@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Booking Details</h3>
+                </div>
+                <div class="card-body">
+                    {% if booking %}
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <h4>Room Information</h4>
+                                <ul class="list-unstyled">
+                                    <li><strong>Room Number:</strong> {{ booking.room.room_number }}</li>
+                                    <li><strong>Room Type:</strong> {{ booking.room.room_type }}</li>
+                                    <li><strong>Price per Night:</strong> ₹{{ booking.room.price_per_night }}</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <h4>Booking Information</h4>
+                                <ul class="list-unstyled">
+                                    <li><strong>Guest Name:</strong> {{ booking.guest_name }}</li>
+                                    <li><strong>Check-in:</strong> {{ booking.check_in|date:"F j, Y" }}</li>
+                                    <li><strong>Check-out:</strong> {{ booking.check_out|date:"F j, Y" }}</li>
+                                    <li><strong>Total Price:</strong> ₹{{ booking.total_price }}</li>
+                                    <li><strong>Status:</strong> 
+                                        <span class="badge {% if booking.status == 'confirmed' %}bg-success{% else %}bg-warning{% endif %}">
+                                            {{ booking.payment_status|title }}
+                                        </span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        {% if booking.room.image_path %}
+                            <div class="room-image mb-4">
+                                <img src="{% static booking.room.image_path %}" class="img-fluid rounded" alt="{{ booking.room.room_type }} Room">
+                            </div>
+                        {% endif %}
+
+                        <div class="booking-actions mt-4">
+                            <a href="{% url 'booking_list' %}" class="btn btn-secondary">Back to Bookings</a>
+                            {% if booking.status == 'confirmed' %}
+                                <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#cancelBookingModal" onclick="booking.status='cancelled'">Cancel Booking</button>
+                            {% endif %}
+                        </div>
+                    {% else %}
+                        <div class="alert alert-warning">
+                            Booking not found.
+                        </div>
+                        <a href="{% url 'booking_list' %}" class="btn btn-secondary">Back to Bookings</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if booking and booking.status == 'confirmed' %}
+<!-- Cancel Booking Modal -->
+<div class="modal fade" id="cancelBookingModal" tabindex="-1" aria-labelledby="cancelBookingModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="cancelBookingModalLabel">Cancel Booking</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to cancel this booking?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <form method="post" action="{% url 'cancel_booking' booking.id %}" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Cancel Booking</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<style>
+.room-image img {
+    max-height: 300px;
+    width: 100%;
+    object-fit: cover;
+}
+.booking-actions {
+    display: flex;
+    gap: 1rem;
+}
+</style>
+{% endblock %}

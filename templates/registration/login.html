@@ -1,0 +1,145 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-lg">
+                <div class="card-body p-5">
+                    <h2 class="card-title text-center mb-4">
+                        <i class="fas fa-sign-in-alt me-2"></i>Login
+                    </h2>
+                    
+                    <form method="post" class="login-form">
+                        {% csrf_token %}
+                        
+                        <div class="mb-4">
+                            <label for="id_username" class="form-label">Username</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="fas fa-user"></i>
+                                </span>
+                                <input type="text" name="username" class="form-control" id="id_username" required>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="id_password" class="form-label">Password</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="fas fa-lock"></i>
+                                </span>
+                                <input type="password" name="password" class="form-control" id="id_password" required>
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg btn-block btn-blink">
+                                <i class="fas fa-sign-in-alt me-2"></i>Login Now
+                            </button>
+                        </div>
+                        
+                        <div class="text-center mt-4">
+                            <p class="mb-0">Don't have an account? 
+                                <a href="{% url 'register' %}" class="text-primary">Register here</a>
+                            </p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .login-form .form-control {
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+    
+    .login-form .input-group-text {
+        background-color: var(--light-bg);
+        border-right: none;
+        transition: all 0.3s ease;
+    }
+    
+    .login-form .form-control {
+        border-left: none;
+    }
+    
+    .login-form .input-group:focus-within {
+        box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+    }
+    
+    .login-form .input-group:focus-within .input-group-text,
+    .login-form .input-group:focus-within .form-control {
+        border-color: var(--secondary-color);
+    }
+    
+    .login-form .form-label {
+        font-weight: 500;
+        color: var(--text-color);
+        transition: all 0.3s ease;
+    }
+    
+    .card {
+        border: none;
+        border-radius: 15px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        width: 100%;
+        max-width: 500px; /* Adjust the max-width as needed */
+    }
+    
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    }
+    
+    .btn-blink {
+        animation: blink 2s infinite, pulse 1.5s infinite;
+        font-weight: 500;
+        letter-spacing: 0.5px;
+        transition: background-color 0.3s ease, transform 0.3s ease;
+    }
+    
+    .btn-blink:hover {
+        background-color: var(--primary-color-dark);
+        transform: scale(1.05);
+    }
+    
+    @keyframes blink {
+        0% { opacity: 1; }
+        50% { opacity: 0.8; }
+        100% { opacity: 1; }
+    }
+    
+    @keyframes pulse {
+        0% { box-shadow: 0 0 0 0 rgba(52, 152, 219, 0.7); }
+        70% { box-shadow: 0 0 0 10px rgba(52, 152, 219, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(52, 152, 219, 0); }
+    }
+    
+    .login-form .form-control:focus {
+        border-color: var(--secondary-color);
+        box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+    }
+    
+    .login-form .form-control:focus + .input-group-text {
+        border-color: var(--secondary-color);
+    }
+    
+    .login-form .form-control:focus ~ .form-label {
+        color: var(--secondary-color);
+    }
+    
+    .login-form .form-control:not(:placeholder-shown) + .input-group-text {
+        border-color: var(--secondary-color);
+    }
+    
+    .login-form .form-control:not(:placeholder-shown) ~ .form-label {
+        color: var(--secondary-color);
+    }
+</style>
+{% endblock %}
